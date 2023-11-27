@@ -1,6 +1,6 @@
 #!/bin/bash
 
-LMP_EXEC=/home/lafourcadep/CODES/LAMMPS/lammps_repo/build/lmp
+LMP_EXEC=path_to_lmp_binary_file
 
 function Launch_NPT_limited {
     cs=$1
