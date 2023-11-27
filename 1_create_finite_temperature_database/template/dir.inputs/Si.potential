@@ -1,0 +1,2 @@
+pair_style sw
+pair_coeff * * dir.inputs/Si.sw Si

@@ -1,0 +1,47 @@
+variable	starttemp      equal 5.0
+variable 	inittemp       equal 2.*${starttemp}
+variable	finaltemp      equal TEMPERATURE.0
+variable 	targetpressure equal 0.0
+variable 	lowtempSteps   equal 5000
+variable	tstep 	       equal 1e-3
+variable	hrate	       equal RATE
+variable 	ramptempSteps  equal floor(${finaltemp}/${hrate}/${tstep})
+variable	pstime 	       equal step*dt
+variable 	sxx 	       equal 1.e-4*pxx
+variable 	syy 	       equal 1.e-4*pyy
+variable 	szz 	       equal 1.e-4*pzz
+variable 	sxy 	       equal 1.e-4*pxy
+variable 	sxz 	       equal 1.e-4*pxz
+variable 	syz 	       equal 1.e-4*pyz
+variable     	TK  	       equal temp
+variable     	PE  	       equal pe
+variable     	KE  	       equal ke
+variable     	V   	       equal vol
+
+dimension	3
+boundary 	p p p
+units		metal
+atom_style	atomic
+read_data       dir.structure/SPECIE_cell.lmp
+include		dir.inputs/SPECIE.potential
+neighbor	2.0 bin
+
+timestep 	${tstep}
+
+velocity	all create ${inittemp} 16723 dist gaussian
+
+thermo 		1000
+thermo_style	custom step pe ke temp pxx pyy pzz pxy pyz pxz
+
+fix		extra all print 10 "${pstime} ${TK} ${PE} ${KE} ${V} ${sxx} ${syy} ${szz} ${sxy} ${sxz} ${syz}" file thermodynamic_state_SPECIE_STRUCTURE.dat
+
+
+fix 		1 all npt temp ${starttemp} ${starttemp} 0.100 aniso ${targetpressure} ${targetpressure} 1.0
+run 		${lowtempSteps}
+write_data	dir.data/low_T_low_P_equilibrated_SPECIE_STRUCTURE.data
+
+unfix		1
+
+fix 		1 all npt temp ${inittemp} ${finaltemp} 0.100 aniso ${targetpressure} ${targetpressure} 1.0
+
+run 		${ramptempSteps}

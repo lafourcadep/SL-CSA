@@ -1,0 +1,22 @@
+dimension	3
+boundary 	p p p
+units		metal
+atom_style	atomic
+read_restart  	dir.restarts/ramp_SPECIE_STRUCTURE.TIMESTEP.restart
+include		dir.deformation.all/deformation.COUNTER.mod
+
+# Choose potential
+include		dir.inputs/SPECIE.potential
+neighbor	2.0 bin
+
+timestep 	1.0e-3
+
+reset_timestep	0
+
+fix 		1 all nve
+
+compute 	bnnn all sna/atom RCUT 0.99363 TWOJMAX 0.5 1.0 rmin0 0.0 nnn NNEIGH wmode WMODEVAL delta DELTAVAL
+
+dump 		mydump_bnnn all custom 100 dir.dumps/dump_SPECIE_STRUCTURE.COUNTER.ramp id x y z c_bnnn[*]
+
+run 		0

@@ -1,0 +1,3 @@
+pair_style hybrid/overlay zero RCUT sw
+pair_coeff * * zero
+pair_coeff * * sw dir.inputs/Si.sw Si
